@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>sorry, ak</title>
+<meta name="description" content="An apology, in three questions." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFF6F0;
+    --paper-edge:#F3E3DA;
+    --ink:#2E2A2B;
+    --muted:#9C8A8C;
+    --blush:#F7C8CE;
+    --rose:#E0576E;
+    --gold:#D9973B;
+    --hand:'Caveat', 'Segoe Script', cursive;
+    --body:'Nunito', system-ui, -apple-system, sans-serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #FFEDE8 0%, #FDE3E6 45%, #F6D7DC 100%);
+    font-family:var(--body);
+    color:var(--ink);
+    display:grid;
+    place-items:center;
+    padding:24px 16px;
+    overflow-x:hidden;
+  }
+
+  /* ambient hearts */
+  .sky{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;}
+  .sky span{
+    position:absolute; bottom:-40px;
+    font-size:18px; opacity:.35;
+    animation:drift linear infinite;
+  }
+  @keyframes drift{
+    0%{transform:translateY(0) rotate(0deg); opacity:0;}
+    12%{opacity:.4;}
+    100%{transform:translateY(-115dvh) rotate(38deg); opacity:0;}
+  }
+
+  /* the note */
+  .note{
+    position:relative; z-index:1;
+    width:min(560px, 100%);
+    background:var(--paper);
+    border:1px solid var(--paper-edge);
+    border-radius:6px;
+    padding:56px 34px 44px;
+    text-align:center;
+    box-shadow:0 1px 0 #fff inset, 0 18px 44px rgba(120,60,70,.16);
+    transform:rotate(-.5deg);
+  }
+  /* the ruled-paper feel, kept faint */
+  .note::before{
+    content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(to bottom, transparent 0 33px, rgba(160,130,135,.13) 33px 34px);
+    border-radius:6px; pointer-events:none;
+  }
+  .clip{
+    position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+    width:26px; height:52px;
+    border:3px solid #B9A6A8; border-bottom-color:transparent;
+    border-radius:13px 13px 4px 4px;
+  }
+
+  .step{display:none; position:relative; z-index:2;}
+  .step.on{display:block; animation:in .38s cubic-bezier(.2,.8,.3,1);}
+  @keyframes in{from{opacity:0; transform:translateY(10px) scale(.985);} to{opacity:1; transform:none;}}
+
+  .eyebrow{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--muted); font-weight:800; margin-bottom:18px;
+  }
+  h1{
+    font-family:var(--hand);
+    font-weight:700;
+    font-size:clamp(34px, 8vw, 52px);
+    line-height:1.1;
+    letter-spacing:.01em;
+  }
+  .sub{
+    font-family:var(--hand);
+    font-size:clamp(21px, 4.4vw, 27px);
+    color:#6E5F61;
+    margin-top:12px;
+  }
+
+  .buttons{
+    display:flex; gap:14px; justify-content:center; align-items:center;
+    margin-top:34px; flex-wrap:wrap;
+  }
+  button{
+    font-family:var(--body); font-weight:800;
+    border:0; cursor:pointer; border-radius:999px;
+    padding:14px 30px; font-size:16px;
+    transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s, background .18s;
+  }
+  button:focus-visible{outline:3px solid var(--gold); outline-offset:3px;}
+  .yes{
+    background:var(--rose); color:#fff;
+    box-shadow:0 8px 18px rgba(224,87,110,.32);
+  }
+  .yes:hover{transform:translateY(-2px) scale(1.04);}
+  .no{
+    background:transparent; color:var(--muted);
+    border:2px solid #E2CFD2; padding:12px 26px;
+  }
+  .no:hover{color:#7A686A; border-color:#CBB4B8;}
+
+  /* yes grows, no shrinks as it goes on */
+  .s2 .yes{font-size:18px; padding:16px 36px;}
+  .s2 .no{font-size:14px; padding:10px 20px;}
+  .s3 .yes{font-size:21px; padding:18px 44px;}
+  .s3 .no{font-size:12px; padding:8px 16px;}
+  .s4 .yes{font-size:24px; padding:20px 52px;}
+  .s4 .no{font-size:11px; padding:7px 14px;}
+
+  /* No button, locked out after three refusals */
+  .no.locked{
+    opacity:.5; color:#C3B1B3;
+    border-style:dashed; border-color:#E2CFD2;
+    cursor:not-allowed;
+  }
+  .no.locked:hover{color:#C3B1B3; border-color:#E2CFD2;}
+  .no.shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97);}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-9px) rotate(-3deg);}
+    40%{transform:translateX(9px) rotate(3deg);}
+    60%{transform:translateX(-6px) rotate(-2deg);}
+    80%{transform:translateX(6px) rotate(2deg);}
+  }
+  .nope{
+    position:relative; z-index:3;
+    display:none; margin:20px auto 0;
+    width:max-content; max-width:100%;
+    padding:13px 24px;
+    background:var(--rose); color:#fff;
+    border-radius:999px;
+    box-shadow:0 10px 24px rgba(178,63,83,.34);
+    font-family:var(--hand); font-size:clamp(22px, 5.2vw, 28px);
+    line-height:1.2; text-align:center;
+  }
+  .nope.on{display:block; animation:pop .42s cubic-bezier(.16,1.3,.4,1);}
+  @keyframes pop{
+    0%{opacity:0; transform:scale(.6) rotate(-5deg);}
+    70%{transform:scale(1.07) rotate(1deg);}
+    100%{opacity:1; transform:scale(1);}
+  }
+
+  /* playful escalation art */
+  .beg{
+    font-size:clamp(64px, 18vw, 84px);
+    margin:22px auto 0; line-height:1;
+    animation:wobble 1.7s ease-in-out infinite;
+  }
+  @keyframes wobble{
+    0%,100%{transform:rotate(-7deg) translateY(0);}
+    50%{transform:rotate(7deg) translateY(-6px);}
+  }
+
+  /* the swear seal — the one loud thing on the page */
+  .seal{
+    width:132px; height:132px; margin:26px auto 0;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #EE7186, var(--rose) 55%, #B23F53);
+    color:#fff; display:grid; place-content:center; gap:2px;
+    box-shadow:0 10px 22px rgba(178,63,83,.34);
+    transform:rotate(-9deg);
+    animation:stamp .5s cubic-bezier(.16,1.3,.4,1) both;
+  }
+  @keyframes stamp{
+    0%{transform:rotate(-24deg) scale(2.1); opacity:0;}
+    60%{transform:rotate(-6deg) scale(.94); opacity:1;}
+    100%{transform:rotate(-9deg) scale(1);}
+  }
+  .seal .cap{font-size:9px; letter-spacing:.2em; font-weight:800; text-transform:uppercase; opacity:.85;}
+  .seal .num{font-family:var(--hand); font-size:44px; font-weight:700; line-height:1;}
+
+  /* saturday ticket */
+  .ticket{
+    margin:28px auto 0; width:min(330px,100%);
+    background:#fff; border:2px dashed #E7CFA6;
+    border-radius:12px; padding:18px 20px;
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    text-align:left;
+    box-shadow:0 10px 24px rgba(150,110,50,.14);
+    animation:in .5s .25s both cubic-bezier(.2,.8,.3,1);
+  }
+  .ticket .day{font-family:var(--hand); font-size:30px; line-height:1;}
+  .ticket .who{font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.06em; margin-top:4px;}
+  .ticket .stub{
+    font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); writing-mode:vertical-rl; border-left:2px dashed #E7CFA6; padding-left:12px;
+  }
+
+  .link{
+    display:inline-block; margin-top:26px;
+    background:none; border:0; padding:6px;
+    font-family:var(--body); font-size:14px; font-weight:700;
+    color:var(--rose); text-decoration:underline; text-underline-offset:4px;
+  }
+  .sign{
+    margin-top:30px; font-family:var(--hand); font-size:22px; color:var(--muted);
+  }
+
+  .confetti{position:fixed; inset:0; pointer-events:none; z-index:5;}
+  .confetti i{
+    position:absolute; font-size:20px;
+    animation:fall 2.6s ease-in forwards;
+  }
+  @keyframes fall{
+    0%{transform:translateY(-10vh) rotate(0); opacity:1;}
+    100%{transform:translateY(105vh) rotate(540deg); opacity:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+  @media (max-width:420px){
+    .note{padding:48px 20px 36px;}
+    .buttons{gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<main class="note">
+  <div class="clip" aria-hidden="true"></div>
+
+  <!-- 1 -->
+  <section class="step on s1" id="q1">
+    <p class="eyebrow">a note for ak</p>
+    <h1>I'm sorry, ak.</h1>
+    <p class="sub">Will you forgive me?</p>
+    <div class="buttons">
+      <button class="yes" data-go="q2">Yes</button>
+      <button class="no" data-sorry="q1">No</button>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="step s2" id="q2">
+    <p class="eyebrow">question two</p>
+    <h1>Are you sure, ak?</h1>
+    <p class="sub">Take your time. I'll wait.</p>
+    <div class="buttons">
+      <button class="yes" data-go="q3">Yes</button>
+      <button class="no" data-sorry="q2">No</button>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="step s3" id="q3">
+    <p class="eyebrow">one more</p>
+    <h1>Thank you, gachki?</h1>
+    <p class="sub">Don't leave me hanging now.</p>
+    <div class="buttons">
+      <button class="yes" data-go="q4">Yes</button>
+      <button class="no" data-sorry="q3">No</button>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="step s4" id="q4">
+    <p class="eyebrow">last one, promise</p>
+    <h1>Saturday, then?</h1>
+    <p class="sub">Say yes and I'm the happiest.</p>
+    <div class="buttons">
+      <button class="yes" data-go="end">Yes</button>
+      <button class="no" data-sorry="q4">No</button>
+    </div>
+  </section>
+
+  <!-- sorry screen (content swaps per question) -->
+  <section class="step" id="sorry">
+    <p class="eyebrow" id="sorryEyebrow"></p>
+    <h1 id="sorryTitle"></h1>
+    <p class="sub" id="sorrySub"></p>
+    <div id="sorryArt"></div>
+    <button class="link" id="again">ask me again →</button>
+  </section>
+
+  <!-- end -->
+  <section class="step" id="end">
+    <p class="eyebrow">forgiven</p>
+    <h1>Thank you 🤍</h1>
+    <p class="sub">We're going out on Saturday.<br>And we're listening to Jagjit togetherrr 🎶</p>
+    <div class="ticket">
+      <div>
+        <div class="day">Saturday</div>
+        <div class="who">you + me · no cancelling</div>
+        <div class="who">soundtrack · jagjit singh</div>
+      </div>
+      <div class="stub">plan</div>
+    </div>
+    <p class="sign">— sorry again, really.</p>
+    <button class="link" id="restart">back to the start ↺</button>
+  </section>
+</main>
+
+<p class="nope" id="nope">i wont let u press no this timmmme 😤</p>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+  // ambient hearts
+  const sky = document.getElementById('sky');
+  const glyphs = ['🤍','💗','🌸','💌','🩷'];
+  for (let i = 0; i < 16; i++){
+    const s = document.createElement('span');
+    s.textContent = glyphs[i % glyphs.length];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.fontSize = (13 + Math.random() * 16) + 'px';
+    s.style.animationDuration = (11 + Math.random() * 12) + 's';
+    s.style.animationDelay = (-Math.random() * 20) + 's';
+    sky.appendChild(s);
+  }
+
+  const steps = [...document.querySelectorAll('.step')];
+  let lastQuestion = 'q1';
+
+  const sorryCopy = [
+    {
+      eyebrow: 'ouch.',
+      title: "That's a no?? 😭",
+      sub: "Okay okay. Fair enough.<br>But can I ask one more time?",
+      art: '<div class="beg">🥺</div>',
+      cta: 'go on then →'
+    },
+    {
+      eyebrow: 'still a no.',
+      title: "ak pleaseee 🙏",
+      sub: "I built a whole website for this.<br>That's effort. That counts.",
+      art: '<div class="beg">😔</div>',
+      cta: 'one more chance →'
+    },
+    {
+      eyebrow: 'okay. I hear you.',
+      title: 'Sorry.',
+      sub: "It won't happen again.<br>I swear on that —",
+      art: '<div class="seal" role="img" aria-label="I swear on 2.57"><span class="cap">I swear on</span><span class="num">2.57</span></div>',
+      cta: 'ask me again →'
+    }
+  ];
+
+  let noCount = 0;
+  let noLocked = false;
+  const noButtons = [...document.querySelectorAll('[data-sorry]')];
+  const nope = document.getElementById('nope');
+  let nopeTimer;
+
+  function lockNo(){
+    noLocked = true;
+    noButtons.forEach(b => b.classList.add('locked'));
+  }
+
+  function unlockNo(){
+    noLocked = false;
+    noButtons.forEach(b => b.classList.remove('locked'));
+  }
+
+  function talkBack(btn){
+    const row = btn.closest('.buttons');          // park the pill right under the buttons
+    if (row) row.insertAdjacentElement('afterend', nope);
+    btn.classList.remove('shake');
+    void btn.offsetWidth;
+    btn.classList.add('shake');
+    nope.classList.remove('on');
+    void nope.offsetWidth;
+    nope.classList.add('on');
+    clearTimeout(nopeTimer);
+    nopeTimer = setTimeout(() => nope.classList.remove('on'), 4200);
+  }
+
+  function renderSorry(){
+    noCount++;
+    const c = sorryCopy[Math.min(noCount, sorryCopy.length) - 1];
+    document.getElementById('sorryEyebrow').textContent = c.eyebrow;
+    document.getElementById('sorryTitle').textContent = c.title;
+    document.getElementById('sorrySub').innerHTML = c.sub;
+    document.getElementById('sorryArt').innerHTML = c.art;
+    document.getElementById('again').textContent = c.cta;
+  }
+
+  function show(id){
+    steps.forEach(s => s.classList.toggle('on', s.id === id));
+    nope.classList.remove('on');
+    if (id === 'end') celebrate();
+  }
+
+  document.querySelectorAll('[data-go]').forEach(b =>
+    b.addEventListener('click', () => show(b.dataset.go))
+  );
+
+  noButtons.forEach(b =>
+    b.addEventListener('click', () => {
+      if (noLocked){ talkBack(b); return; }   // 4th No onwards: not happening
+      lastQuestion = b.dataset.sorry;
+      renderSorry();
+      show('sorry');
+      if (noCount >= 3) lockNo();
+    })
+  );
+
+  document.getElementById('again')
+    .addEventListener('click', () => show(lastQuestion));
+
+  document.getElementById('restart')
+    .addEventListener('click', () => { lastQuestion = 'q1'; noCount = 0; unlockNo(); show('q1'); });
+
+  function celebrate(){
+    const box = document.getElementById('confetti');
+    const bits = ['🤍','💗','✨','🌸','🎉'];
+    for (let i = 0; i < 40; i++){
+      const c = document.createElement('i');
+      c.textContent = bits[Math.floor(Math.random() * bits.length)];
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.animationDelay = (Math.random() * 0.9) + 's';
+      c.style.fontSize = (14 + Math.random() * 18) + 'px';
+      box.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }
+  }
+</script>
+</body>
+</html>
