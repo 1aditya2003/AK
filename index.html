@@ -14,12 +14,14 @@
 <div class="progress" id="dots" aria-label="Response stage"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
 <p class="note" id="foot">Whatever you feel, thank you for being here. ♡</p>
 </div>
-<div id="answer" class="panel hidden final"><div class="heart" id="answerIcon">💌</div><h1 id="answerTitle"></h1><p id="answerText"></p><div class="buttons"><button class="primary" id="back">Back to Flower 🌸</button></div></div>
+<div id="answer" class="panel hidden final"><div class="heart" id="answerIcon">💌</div><h1 id="answerTitle"></h1><p id="answerText"></p><div class="buttons"><button class="primary" id="back">Back to the flowers 🌻</button></div></div>
 </main>
 <script>
 (function(){
 const home=document.getElementById('home'),answer=document.getElementById('answer'),no=document.getElementById('no'),yes=document.getElementById('yes'),back=document.getElementById('back'),dots=[...document.querySelectorAll('.dot')];
 let refusals=0;
+// Keep the opening flower page as a real navigation destination.
+function goHome(){location.hash="flower";answer.classList.add("hidden");home.classList.remove("hidden");render();window.scrollTo(0,0)}
 const messages=[
 {title:"I'll do better, with actions.",text:"I know words aren't enough. I want to be more patient, more thoughtful, and more present. I want you to feel the difference in the little things, not just hear promises.",icon:"🌼"},
 {title:"I still believe in the good we shared.",text:"I don't want to fight with you. I want to work through what went wrong, take responsibility for my part, and build something kinder and stronger, one day at a time.",icon:"💗"},
@@ -28,7 +30,8 @@ function render(){dots.forEach((d,i)=>d.classList.toggle('active',i===refusals))
 function show(title,text,icon){document.getElementById('answerTitle').textContent=title;document.getElementById('answerText').textContent=text;document.getElementById('answerIcon').textContent=icon;home.classList.add('hidden');answer.classList.remove('hidden');answer.classList.remove('panel');void answer.offsetWidth;answer.classList.add('panel')}
 no.addEventListener('click',()=>{if(refusals<3){const m=messages[refusals];refusals++;render();show(m.title,m.text,m.icon)}else{show("I hear you.","Thank you for being honest with me. I care about you, and I'll respect your space. You don't owe me an answer.", "🤍")}});
 yes.addEventListener('click',()=>show("A new little beginning ❤️","Thank you for being open to trying. I know rebuilding trust takes time, and I want to earn it through patience, consistency, and the way I treat you every day. Here's to happier moments, together. 🌸","💞"));
-back.addEventListener('click',()=>{answer.classList.add('hidden');home.classList.remove('hidden');home.classList.remove('panel');void home.offsetWidth;home.classList.add('panel');render()});
+back.addEventListener('click',goHome);
+window.addEventListener("hashchange",()=>{if(location.hash==="#flower")goHome()});
 render();
 })();
 </script></body></html>
